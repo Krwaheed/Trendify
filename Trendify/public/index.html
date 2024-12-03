@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trendify - Your Next Favorite Find!</title>
+    <link rel="stylesheet" href="styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Poppins:wght@400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Header with Navigation -->
+<header>
+    <nav>
+        <h1 class="logo"><a href="index.html">Trendify</a></h1>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="cart.html">Shopping Cart</a></li>
+            <li><a href="admin-upload.html" class="admin-upload-btn">Admin</a></li> <!-- Admin Upload Button -->
+        </ul>
+
+        <!-- Search Form inside the Header -->
+        <form class="header-search" action="#" method="get">
+            <input type="text" name="search" id="searchTerm" placeholder="Search Now" />
+            <button type="button" onclick="searchProduct()">Go</button>
+        </form>
+    </nav>
+</header>
+
+<!-- Splash Section -->
+<section class="splash">
+    <div class="splash-content">
+        <h1>Trendify</h1>
+        <p class="tagline">Your Next Favorite Find, Just a Click Away!</p>
+        <button class="cta-button" onclick="location.href='products.html'">Shop Now</button>
+    </div>
+</section>
+
+<!-- Main Features Section -->
+<section class="features">
+    <h2>Main Features</h2>
+    <div class="feature-list">
+        <div class="feature-item">
+            <h3>Shop the Latest Trends</h3>
+            <p>Discover the newest products and exclusive deals handpicked for you.</p>
+        </div>
+        <div class="feature-item">
+            <h3>Easy Navigation</h3>
+            <p>Find what you're looking for quickly with smart search and category browsing.</p>
+        </div>
+        <div class="feature-item">
+            <h3>Secure Shopping</h3>
+            <p>Shop confidently with fast, secure checkout and a seamless user experience.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2024 Trendify. All rights reserved.</p>
+</footer>
+
+<!-- JavaScript Section -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/api/products')
+            .then(response => response.json())
+            .then(products => {
+                const productList = document.getElementById('product-list');
+                productList.innerHTML = '';
+                products.forEach(product => {
+                    const productHTML = `
+                        <div class="product">
+                            <img src="${product.image_url}" alt="${product.name}">
+                            <h3>${product.name}</h3>
+                            <p>${product.description}</p>
+                            <p>$${product.price.toFixed(2)}</p>
+                            <button onclick="addToCart(${product.product_id})">Add to Cart</button>
+                        </div>`;
+                    productList.innerHTML += productHTML;
+                });
+            })
+            .catch(err => console.error('Error fetching products:', err));
+    });
+</script>
+<div id="product-list"></div>
+
+
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Trendify</title>
+    <link rel="stylesheet" href="styles/styles.css">
+</head>
+<body>
+
+<header>
+    <nav>
+        <h1 class="logo"><a href="index.html">Trendify</a></h1>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="cart.html">Shopping Cart</a></li>
+            <li><a href="admin-products.html">Admin</a></li>
+        </ul>
+    </nav>
+</header>
+
+<section class="product-details">
+    <div class="product-container" id="product-details"></div>
+</section>
+
+<footer>
+    <p>&copy; 2024 Trendify. All rights reserved.</p>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('product');
+
+        fetch(`/api/products/${productId}`)
+            .then(response => response.json())
+            .then(product => {
+                const detailsContainer = document.getElementById('product-details');
+                const productHTML = `
+                <img src="${product.image_url}" alt="${product.name}" class="product-image">
+                <div class="product-info">
+                    <h2>${product.name}</h2>
+                    <p class="price">$${product.price.toFixed(2)}</p>
+                    <p class="description">${product.description}</p>
+                    <button class="cta-button" onclick="addToCart(${product.product_id})">Add to Cart</button>
+                </div>`;
+                detailsContainer.innerHTML = productHTML;
+            })
+            .catch(err => {
+                console.error('Error fetching product details:', err);
+                detailsContainer.innerHTML = '<p>Product not found.</p>';
+            });
+    });
+
+    function addToCart(productId) {
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+
+        const existingItem = cart.find(item => item.productId === productId);
+        if (existingItem) {
+
+            existingItem.quantity += 1;
+        } else {
+
+            cart.push({ productId, quantity: 1 });
+        }
+
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+
+
+        alert('Product added to cart!');
+    }
+
+</script>
+
+</body>
+</html>

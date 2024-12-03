@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Manage Products</title>
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+<header>
+    <nav>
+        <h1 class="logo"><a href="index.html">Trendify</a></h1>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="admin-products.html">Manage Products</a></li>
+            <li><a href="logout.html">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <h1>Product Management</h1>
+    <button onclick="location.href='product-edit.ejs';">Add New Product</button>
+    <div id="product-list"></div>
+</main>
+
+<footer>
+    <p>&copy; 2024 Trendify. All rights reserved.</p>
+</footer>
+
+<script>
+    // Load products on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('/api/products')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch products (Status: ${response.status})`);
+                }
+                return response.json();
+            })
+            .then(products => {
+                const productList = document.getElementById('product-list');
+                productList.innerHTML = '';
+                products.forEach(product => {
+                    const productHTML = `
+                    <div>
+                        <p>${product.name} - $${product.price.toFixed(2)}</p>
+                        <button onclick="editProduct(${product.product_id})">Edit</button>
+                        <button onclick="deleteProduct(${product.product_id})">Delete</button>
+                    </div>`;
+                    productList.innerHTML += productHTML;
+                });
+            })
+            .catch(err => {
+                console.error('Error loading products:', err);
+                document.getElementById('product-list').innerHTML = '<p>Failed to load products.</p>';
+            });
+    });
+
+    // Redirect to edit product page with product_id
+    function editProduct(productId) {
+        if (!productId) {
+            alert('Product ID is missing!');
+            return;
+        }
+        location.href = `product-edit.html?product_id=${productId}`;
+    }
+
+    // Delete product
+    function deleteProduct(productId) {
+        fetch(`/api/products/${productId}`, { method: 'DELETE' })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to delete product (Status: ${response.status})`);
+                }
+                alert('Product deleted successfully');
+                location.reload();
+            })
+            .catch(err => {
+                console.error('Error deleting product:', err);
+                alert(`Error deleting product: ${err.message}`);
+            });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Styles/admin.css">
+    <title>Admin Bulk Upload</title>
+</head>
+<body>
+<header>
+    <nav>
+        <h1 class="logo"><a href="index.html">Trendify</a></h1>
+        <ul class="nav-links">
+            <a href="admin-upload.html">Bulk Upload</a>
+            <a href="admin-products.html">Product Listing</a>
+        </ul>
+    </nav>
+</header>
+<main>
+    <h1>Bulk Upload Products</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="fileUpload">Upload file (JSON, CSV, or TXT):</label>
+        <input type="file" id="fileUpload" name="fileUpload" accept=".json, .csv, .txt">
+        <button type="button" onclick="uploadFile()">Upload</button>
+    </form>
+    <section>
+        <h2>Example File Format</h2>
+        <p>Ensure your file follows this format:</p>
+        <pre>
+id: 1, name: "Product Name", description: "Description", image_url: "/path/to/image.jpg", price: 19.99, category_id: 1, stock_quantity: 10, is_featured: true
+        </pre>
+    </section>
+</main>
+<script>
+    function uploadFile() {
+        const input = document.getElementById('fileUpload');
+        const file = input.files[0];
+
+        if (!file) {
+            alert('Please select a file to upload.');
+            return;
+        }
+
+        const allowedExtensions = ['json', 'csv', 'txt'];
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        if (!allowedExtensions.includes(fileExtension)) {
+            alert('Invalid file type. Please upload a JSON, CSV, or TXT file.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('fileUpload', file);
+
+        fetch('/api/admin/upload', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to upload file (Status: ${response.status})`);
+                }
+                return response.json();
+            })
+            .then(result => {
+                console.log(result);
+                alert('File uploaded successfully!');
+                document.getElementById('uploadForm').reset();
+            })
+            .catch(error => {
+                console.error('Error uploading file:', error);
+                alert(`Error uploading file: ${error.message}`);
+            });
+    }
+
+</script>
+</body>
+</html>
